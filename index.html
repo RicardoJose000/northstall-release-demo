@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northstall - Release-ready marketplace demo</title>
+<meta name="description" content="Interactive demo: Expo + Supabase RLS + Stripe Connect Express + EAS Update, ready for the App Store and Google Play.">
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2308090b'/%3E%3Cpath d='M9 23V9l14 14V9' stroke='%23c8a46b' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="preload" as="image" href="assets/video/hero.jpg">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+<script type="module" src="js/main.js"></script>
+<script>
+  // Safety net: if scripts fail to load, never leave the page behind the intro.
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      if (!window.__ns) {
+        document.documentElement.classList.add('no-motion');
+        document.body.classList.remove('is-loading');
+      }
+    }, 3000);
+  });
+</script>
+</head>
+<body class="is-loading">
+
+<!-- film leader intro -->
+<div class="leader" aria-hidden="true">
+  <div class="leader__ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92"/><circle class="leader__sweep" cx="100" cy="100" r="92"/><line x1="100" y1="0" x2="100" y2="200"/><line x1="0" y1="100" x2="200" y2="100"/></svg><span class="leader__num">3</span></div>
+  <p class="leader__cap">NORTHSTALL / RELEASE REEL</p>
+</div>
+<div class="bars" aria-hidden="true"><i></i><i></i></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><em class="cursor__label"></em></span></div>
+
+<header class="nav">
+  <a href="#top" class="brand" data-magnetic>
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 23V9l14 14V9"/></svg>
+    <span>Northstall</span><small>release demo</small>
+  </a>
+  <nav class="nav__links" aria-label="Sections">
+    <a href="#prototype">Prototype</a>
+    <a href="#money">Money</a>
+    <a href="#security">Security</a>
+    <a href="#updates">Updates</a>
+    <a href="#stores">Stores</a>
+    <a href="#plan">Plan</a>
+  </nav>
+  <div class="nav__meta">
+    <span class="tc" aria-hidden="true">TC <b id="timecode">00:00:00:00</b></span>
+    <span class="pill pill--test"><i></i>Test mode</span>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" data-cursor="scroll">
+  <div class="hero__media">
+    <video class="hero__video" src="assets/video/hero.mp4" poster="assets/video/hero.jpg" autoplay muted loop playsinline preload="auto"></video>
+    <div class="hero__shade"></div>
+    <div class="leak"></div>
+  </div>
+
+  <div class="hero__frame" aria-hidden="true">
+    <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+    <span class="rec"><i></i>REC</span>
+    <span class="hero__lens">35mm / f1.8 / ISO 800</span>
+  </div>
+
+  <div class="hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow"><span class="dash"></span>Expo &middot; Supabase &middot; Stripe Connect Express</p>
+      <h1 class="display split">
+        <span class="line">From AI-built code</span>
+        <span class="line"><em>to both app stores.</em></span>
+      </h1>
+      <p class="lede reveal">A working marketplace prototype that walks the exact path your app needs: seller onboarding, locked-down data, verified payments, safe over-the-air updates and a clean store review.</p>
+      <div class="hero__cta reveal">
+        <a href="#prototype" class="btn btn--brass" data-magnetic><span>Play the demo</span><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></a>
+        <a href="#plan" class="btn btn--ghost" data-magnetic><span>See the plan</span></a>
+      </div>
+    </div>
+
+    <div class="hero__stage" aria-hidden="true">
+      <div class="tilt" id="heroTilt">
+        <div class="phone phone--hero">
+          <div class="phone__notch"></div>
+          <div class="phone__screen hs">
+            <div class="hs__top"><span>9:41</span><span class="hs__dots"><i></i><i></i><i></i></span></div>
+            <p class="hs__hi">Good evening, Maya</p>
+            <h3 class="hs__title">Made by hand,<br><em>near you.</em></h3>
+            <div class="hs__chips"><span class="on">All</span><span>Ceramics</span><span>Leather</span><span>Wood</span></div>
+            <div class="hs__grid">
+              <figure><img src="assets/img/product-mug.jpg" alt=""><figcaption>Ash glaze mug<b>$48</b></figcaption></figure>
+              <figure><img src="assets/img/product-wallet.jpg" alt=""><figcaption>Bifold wallet<b>$86</b></figcaption></figure>
+              <figure><img src="assets/img/product-bowl.jpg" alt=""><figcaption>Walnut bowl<b>$64</b></figcaption></figure>
+              <figure><img src="assets/img/product-candle.jpg" alt=""><figcaption>Cedar candle<b>$28</b></figcaption></figure>
+            </div>
+            <div class="hs__tab"><i class="on"></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+        <div class="float float--a"><span class="ok"></span><div><b>Webhook verified</b><small>payment_intent.succeeded</small></div></div>
+        <div class="float float--b"><div><small>Payout to Ines Ceramics</small><b>$43.20</b></div></div>
+        <div class="float float--c"><code>fp: 7c1e...a90</code><small>production</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__foot">
+    <dl class="stats">
+      <div><dt>Milestones</dt><dd>5</dd></div>
+      <div><dt>Rewrites</dt><dd>0</dd></div>
+      <div><dt>Stores</dt><dd>2</dd></div>
+      <div><dt>Your accounts</dt><dd>100%</dd></div>
+    </dl>
+    <a href="#reel" class="scrollcue"><span>Scroll</span><i></i></a>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" id="reel" aria-hidden="true">
+  <div class="marquee__track">
+    <span>Expo SDK</span><span>EAS Build</span><span>EAS Submit</span><span>EAS Update</span><span>Supabase Auth</span><span>Postgres RLS</span><span>Edge Functions</span><span>Stripe Connect Express</span><span>Signed Webhooks</span><span>TestFlight</span><span>Play Console</span>
+  </div>
+</div>
+
+<!-- ============ 01 MARKETPLACE ============ -->
+<section class="chapter market" id="market">
+  <header class="slate reveal">
+    <span>Scene 01</span><span>Take 1</span><span>The marketplace</span>
+  </header>
+  <div class="market__grid">
+    <div class="market__copy">
+      <h2 class="h2 split"><span class="line">Three people.</span><span class="line"><em>One payment.</em></span><span class="line">Zero guesswork.</span></h2>
+      <p class="reveal">Northstall is a stand-in for your app: local makers sell, buyers pay by card, the platform keeps a fee. Every step below runs the same logic as the real code in this repository, in Stripe test mode.</p>
+      <ol class="roles">
+        <li class="reveal"><b>Buyer</b><span>Pays in the app with Stripe PaymentSheet. Never sees another person's orders.</span></li>
+        <li class="reveal"><b>Seller</b><span>Onboards through Stripe Connect Express. Can list items only after Stripe says charges are enabled.</span></li>
+        <li class="reveal"><b>Platform</b><span>Takes an application fee on every order. Money state changes only through signed webhooks.</span></li>
+      </ol>
+    </div>
+    <div class="mosaic">
+      <figure class="m m1 wipe" data-speed="-0.08"><img src="assets/img/maker-ceramics.jpg" alt="Ceramicist shaping a bowl" loading="lazy"><figcaption>FR 014 &mdash; Ceramics</figcaption></figure>
+      <figure class="m m2 wipe" data-speed="0.10"><video src="assets/video/craft.mp4" poster="assets/video/craft.jpg" muted loop playsinline autoplay preload="metadata"></video><figcaption>FR 022 &mdash; On the wheel</figcaption></figure>
+      <figure class="m m3 wipe" data-speed="-0.04"><img src="assets/img/maker-leather.jpg" alt="Leather craftsman stitching" loading="lazy"><figcaption>FR 031 &mdash; Leather</figcaption></figure>
+      <figure class="m m4 wipe" data-speed="0.14"><img src="assets/img/maker-wood.jpg" alt="Woodworker in a workshop" loading="lazy"><figcaption>FR 047 &mdash; Wood</figcaption></figure>
+      <figure class="m m5 wipe" data-speed="-0.12"><img src="assets/img/maker-florist.jpg" alt="Florist arranging flowers" loading="lazy"><figcaption>FR 052 &mdash; Flowers</figcaption></figure>
+      <figure class="m m6 wipe" data-speed="0.06"><img src="assets/img/maker-coffee.jpg" alt="Small batch coffee" loading="lazy"><figcaption>FR 068 &mdash; Coffee</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3D REEL ============ -->
+<section class="reel" id="makers" aria-label="Makers on Northstall">
+  <div class="reel__sticky">
+    <div class="reel__stage" aria-hidden="true">
+      <div class="reel__ring" id="reelRing">
+        <figure class="cell"><img src="assets/img/maker-ceramics.jpg" alt="" loading="lazy"><figcaption>01 / Ceramics</figcaption></figure>
+        <figure class="cell"><img src="assets/img/product-mug.jpg" alt="" loading="lazy"><figcaption>02 / Mug $48</figcaption></figure>
+        <figure class="cell"><img src="assets/img/maker-leather.jpg" alt="" loading="lazy"><figcaption>03 / Leather</figcaption></figure>
+        <figure class="cell"><img src="assets/img/product-wallet.jpg" alt="" loading="lazy"><figcaption>04 / Wallet $86</figcaption></figure>
+        <figure class="cell"><img src="assets/img/maker-wood.jpg" alt="" loading="lazy"><figcaption>05 / Wood</figcaption></figure>
+        <figure class="cell"><img src="assets/img/product-bowl.jpg" alt="" loading="lazy"><figcaption>06 / Bowl $64</figcaption></figure>
+        <figure class="cell"><img src="assets/img/maker-florist.jpg" alt="" loading="lazy"><figcaption>07 / Flowers</figcaption></figure>
+        <figure class="cell"><img src="assets/img/product-candle.jpg" alt="" loading="lazy"><figcaption>08 / Candle $28</figcaption></figure>
+        <figure class="cell"><img src="assets/img/maker-coffee.jpg" alt="" loading="lazy"><figcaption>09 / Coffee</figcaption></figure>
+        <figure class="cell"><img src="assets/img/maker-textile.jpg" alt="" loading="lazy"><figcaption>10 / Textile</figcaption></figure>
+      </div>
+      <div class="reel__floor"></div>
+    </div>
+    <div class="reel__vignette" aria-hidden="true"></div>
+    <div class="reel__copy">
+      <h2 class="h2"><span class="line">Behind every listing,</span> <em>a person who gets paid.</em></h2>
+      <p>That is why payouts, refunds and verification are tested on real devices before launch, not after the first support ticket.</p>
+    </div>
+    <div class="reel__count" aria-hidden="true"><b id="reelNo">01</b>of 10 frames</div>
+  </div>
+</section>
+
+<!-- ============ 02 PROTOTYPE ============ -->
+<section class="chapter proto" id="prototype">
+  <header class="slate reveal">
+    <span>Scene 02</span><span>Take 1</span><span>Live prototype</span>
+  </header>
+  <div class="proto__head">
+    <h2 class="h2 split"><span class="line">Press play.</span><span class="line"><em>Run the whole money path.</em></span></h2>
+    <p class="reveal">Tap through the phone. The panel on the right shows what happens backstage: Edge Function calls, signed Stripe webhooks and the database rows they change.</p>
+  </div>
+
+  <div class="proto__grid">
+    <ol class="steps" id="steps">
+      <li data-step="signin"><i>01</i><div><b>Sign in</b><span>Apple or email. A profile row is created by a database trigger.</span></div></li>
+      <li data-step="onboard"><i>02</i><div><b>Become a seller</b><span>Express account + hosted onboarding link from an Edge Function.</span></div></li>
+      <li data-step="verified"><i>03</i><div><b>Verified by webhook</b><span>account.updated flips charges_enabled. The redirect alone proves nothing.</span></div></li>
+      <li data-step="list"><i>04</i><div><b>List an item</b><span>RLS only lets verified sellers insert their own listings.</span></div></li>
+      <li data-step="buy"><i>05</i><div><b>Buy with a test card</b><span>Price is read from the database. 10% application fee.</span></div></li>
+      <li data-step="paid"><i>06</i><div><b>Order paid</b><span>payment_intent.succeeded marks the order. Duplicates are ignored.</span></div></li>
+    </ol>
+
+    <div class="proto__phone">
+      <div class="phone phone--app">
+        <div class="phone__notch"></div>
+        <div class="phone__screen app" id="app" aria-live="polite"></div>
+      </div>
+      <button class="link-btn" id="resetDemo" type="button">Reset demo</button>
+    </div>
+
+    <aside class="backstage" aria-label="Backstage">
+      <div class="backstage__tabs" role="tablist">
+        <button role="tab" class="on" data-tab="log" aria-selected="true">Events</button>
+        <button role="tab" data-tab="db" aria-selected="false">Database</button>
+        <span class="backstage__live"><i></i>live</span>
+      </div>
+      <div class="backstage__body">
+        <ol class="log" id="log" data-panel="log"></ol>
+        <div class="db" id="db" data-panel="db" hidden></div>
+      </div>
+      <div class="backstage__foot">
+        <button class="btn btn--small" id="replayWebhook" type="button" disabled>Replay last webhook</button>
+        <small>Stripe retries deliveries. A replay must not double-process.</small>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ 03 MONEY ============ -->
+<section class="chapter money" id="money">
+  <header class="slate reveal">
+    <span>Scene 03</span><span>Take 2</span><span>Where the money goes</span>
+  </header>
+  <div class="money__grid">
+    <div class="money__copy">
+      <h2 class="h2 split"><span class="line">Destination charges,</span><span class="line"><em>in three dimensions.</em></span></h2>
+      <p class="reveal">The buyer pays the platform. Stripe moves the seller's share to their Express account in the same charge, and the application fee stays with the platform. With destination charges the platform also covers Stripe's processing fee, so the numbers below show what each side really keeps.</p>
+      <div class="controls reveal">
+        <label><span>Item price <output id="priceOut">$48.00</output></span><input type="range" id="price" min="10" max="500" step="1" value="48"></label>
+        <label><span>Platform fee <output id="feeOut">10%</output></span><input type="range" id="fee" min="3" max="25" step="1" value="10"></label>
+      </div>
+      <dl class="ledger reveal">
+        <div><dt>Buyer pays</dt><dd id="lBuyer">$48.00</dd></div>
+        <div><dt>Seller receives</dt><dd id="lSeller">$43.20</dd></div>
+        <div><dt>Application fee</dt><dd id="lFee">$4.80</dd></div>
+        <div><dt>Stripe fee (est. 2.9% + 30c)</dt><dd id="lStripe">-$1.69</dd></div>
+        <div class="total"><dt>Platform keeps</dt><dd id="lNet">$3.11</dd></div>
+      </dl>
+      <p class="fine">Card pricing varies by country and card type. Estimate uses standard US online card pricing.</p>
+    </div>
+    <div class="money__stage">
+      <canvas id="moneyCanvas" aria-label="3D animation of payment flow between buyer, platform and seller"></canvas>
+      <div class="tag3d" data-node="buyer"><b>Buyer</b><span id="tBuyer">$48.00</span></div>
+      <div class="tag3d" data-node="platform"><b>Platform</b><span id="tPlatform">$4.80</span></div>
+      <div class="tag3d" data-node="seller"><b>Seller</b><span id="tSeller">$43.20</span></div>
+      <p class="money__hint">Drag to orbit</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 SECURITY ============ -->
+<section class="chapter security" id="security">
+  <div class="security__bg"><img src="assets/img/texture-paper.jpg" alt="" loading="lazy"></div>
+  <header class="slate reveal">
+    <span>Scene 04</span><span>Take 3</span><span>Row level security</span>
+  </header>
+  <div class="security__head">
+    <h2 class="h2 split"><span class="line">The anon key is public.</span><span class="line"><em>So the database says no.</em></span></h2>
+    <p class="reveal">AI-generated apps often ship with RLS turned off or with <code>using (true)</code> policies. Pick who is asking and what they ask for. The answer comes from the same policies as the migration on the left.</p>
+  </div>
+  <div class="security__grid">
+    <div class="code reveal">
+      <div class="code__bar"><span class="code__dots"><i></i><i></i><i></i></span><span class="code__file" id="codeFile">supabase/migrations/20261120000000_marketplace.sql</span>
+        <div class="code__tabs">
+          <button class="on" data-file="supabase/migrations/20261120000000_marketplace.sql">migration.sql</button>
+          <button data-file="supabase/functions/stripe-webhook/index.ts">stripe-webhook</button>
+          <button data-file="supabase/functions/create-payment/index.ts">create-payment</button>
+          <button data-file="eas.json">eas.json</button>
+        </div>
+      </div>
+      <pre class="code__body" id="codeBody" tabindex="0"><code>Loading...</code></pre>
+    </div>
+    <div class="tester reveal">
+      <fieldset>
+        <legend>Who is asking</legend>
+        <div class="seg" id="who">
+          <button class="on" data-who="anon">Anonymous</button>
+          <button data-who="maya">Maya <small>buyer</small></button>
+          <button data-who="ines">Ines <small>seller</small></button>
+          <button data-who="leo">Leo <small>other user</small></button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Query</legend>
+        <div class="seg seg--q" id="query">
+          <button class="on" data-q="listings">select * from listings</button>
+          <button data-q="orders">select * from orders</button>
+          <button data-q="seller_accounts">select * from seller_accounts</button>
+          <button data-q="insert_listing">insert into listings ...</button>
+          <button data-q="update_order">update orders set status = 'paid'</button>
+        </div>
+      </fieldset>
+      <div class="verdict" id="verdict"></div>
+      <div class="rows" id="rows"></div>
+    </div>
+  </div>
+  <ul class="checks">
+    <li class="reveal"><b>01</b>RLS on every table, no <code>using (true)</code> on private data</li>
+    <li class="reveal"><b>02</b>No service_role key anywhere in the app bundle</li>
+    <li class="reveal"><b>03</b>Prices read on the server, never sent by the app</li>
+    <li class="reveal"><b>04</b>Webhooks verified on the raw body, stored by event id</li>
+    <li class="reveal"><b>05</b>Migrations in git so staging and production match</li>
+  </ul>
+</section>
+
+<!-- ============ 05 UPDATES ============ -->
+<section class="chapter updates" id="updates">
+  <div class="updates__media">
+    <video src="assets/video/night.mp4" poster="assets/video/night.jpg" muted loop playsinline autoplay preload="metadata"></video>
+    <div class="updates__shade"></div>
+  </div>
+  <header class="slate reveal">
+    <span>Scene 05</span><span>Take 1</span><span>Over-the-air updates</span>
+  </header>
+  <div class="updates__head">
+    <h2 class="h2 split"><span class="line">Ship a fix tonight.</span><span class="line"><em>Never break an old build.</em></span></h2>
+    <p class="reveal">One channel per environment, each linked to a branch of the same name. The runtime version comes from the native <b>fingerprint</b>, so an update only reaches binaries it is compatible with. Try it.</p>
+  </div>
+  <div class="lanes reveal" id="lanes">
+    <div class="lane" data-lane="development"><header><b>development</b><small>channel &rarr; branch development</small></header><div class="lane__track"></div></div>
+    <div class="lane" data-lane="preview"><header><b>preview</b><small>channel &rarr; branch preview</small></header><div class="lane__track"></div></div>
+    <div class="lane" data-lane="production"><header><b>production</b><small>channel &rarr; branch production</small></header><div class="lane__track"></div></div>
+  </div>
+  <div class="ota">
+    <div class="ota__buttons">
+      <button class="btn btn--small" data-ota="publish">eas update --branch preview</button>
+      <button class="btn btn--small" data-ota="promote">Promote preview to production</button>
+      <button class="btn btn--small" data-ota="native">Add a native module</button>
+      <button class="btn btn--small" data-ota="build">eas build --profile production</button>
+      <button class="btn btn--small" data-ota="rollback">Roll back production</button>
+    </div>
+    <p class="ota__msg" id="otaMsg" aria-live="polite">Production runs build 1.0.0 (12) with fingerprint 7c1e...a90.</p>
+  </div>
+</section>
+
+<!-- ============ 06 STORES ============ -->
+<section class="chapter stores" id="stores">
+  <header class="slate reveal">
+    <span>Scene 06</span><span>Take 4</span><span>Store review</span>
+  </header>
+  <div class="stores__head">
+    <h2 class="h2 split"><span class="line">Most rejections</span><span class="line"><em>are predictable.</em></span></h2>
+    <p class="reveal">These are the items that usually stop a marketplace app. Each one is checked before the first submission, not after the first rejection.</p>
+    <button class="btn btn--brass" id="runChecks" data-magnetic><span>Run pre-flight check</span></button>
+  </div>
+  <div class="stores__grid">
+    <article class="store reveal" data-store="ios">
+      <header><svg class="ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/><circle class="ring__val" cx="60" cy="60" r="52"/></svg><div><small>Apple</small><h3>App Store</h3><span class="score">0 / 6</span></div></header>
+      <ul>
+        <li><button type="button"><i></i><b>Sign in with Apple</b><span>Required when the app offers other social logins (4.8).</span></button></li>
+        <li><button type="button"><i></i><b>In-app account deletion</b><span>Users must be able to delete the account inside the app (5.1.1).</span></button></li>
+        <li><button type="button"><i></i><b>Right payment rail</b><span>Physical goods and services use Stripe. Digital content needs in-app purchase (3.1).</span></button></li>
+        <li><button type="button"><i></i><b>Privacy labels + policy URL</b><span>Match what Supabase, Stripe and analytics actually collect.</span></button></li>
+        <li><button type="button"><i></i><b>Reviewer demo account</b><span>Seller and buyer logins with test data in review notes.</span></button></li>
+        <li><button type="button"><i></i><b>TestFlight on real devices</b><span>Payments, deep links and push tested on physical iPhones.</span></button></li>
+      </ul>
+    </article>
+    <article class="store reveal" data-store="android">
+      <header><svg class="ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/><circle class="ring__val" cx="60" cy="60" r="52"/></svg><div><small>Google</small><h3>Google Play</h3><span class="score">0 / 6</span></div></header>
+      <ul>
+        <li><button type="button"><i></i><b>Closed testing rule</b><span>New personal accounts: 12 testers for 14 days before production.</span></button></li>
+        <li><button type="button"><i></i><b>Data safety form</b><span>Declared data types match the real SDKs in the build.</span></button></li>
+        <li><button type="button"><i></i><b>Account deletion link</b><span>A web page where users can request deletion, listed in the console.</span></button></li>
+        <li><button type="button"><i></i><b>Target API level</b><span>Current Expo SDK meets Play's target API requirement.</span></button></li>
+        <li><button type="button"><i></i><b>Play App Signing</b><span>Upload key managed by EAS, app signing by Google Play.</span></button></li>
+        <li><button type="button"><i></i><b>Internal track first</b><span>eas submit to internal, verify on devices, then promote.</span></button></li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 07 PLAN ============ -->
+<section class="plan" id="plan">
+  <div class="plan__pin">
+    <header class="plan__head">
+      <div class="slate"><span>Scene 07</span><span>Final cut</span><span>The plan</span></div>
+      <h2 class="h2"><span class="line">Five milestones.</span> <em>Fixed prices.</em></h2>
+    </header>
+    <div class="strip" id="strip">
+      <div class="strip__holes top" aria-hidden="true"></div>
+      <div class="strip__frames">
+        <article class="frame">
+          <span class="frame__no">M1</span>
+          <h3>Audit &amp; build health</h3>
+          <ul><li>Clean install, typecheck, expo-doctor</li><li>Dev builds on iOS and Android</li><li>Written report with every risk ranked</li></ul>
+          <p class="frame__ok"><b>Accepted when</b> both dev builds run and you have the report.</p>
+          <footer><b>$390</b><span>4 days</span></footer>
+        </article>
+        <article class="frame">
+          <span class="frame__no">M2</span>
+          <h3>Supabase security</h3>
+          <ul><li>RLS on every table, policies tested</li><li>Edge Functions verify the user</li><li>Migrations in git, staging = prod</li></ul>
+          <p class="frame__ok"><b>Accepted when</b> the RLS test sheet passes for every role.</p>
+          <footer><b>$450</b><span>4-5 days</span></footer>
+        </article>
+        <article class="frame">
+          <span class="frame__no">M3</span>
+          <h3>Stripe Connect Express</h3>
+          <ul><li>Onboarding, return and refresh links</li><li>Destination charges + app fee</li><li>Signed, idempotent webhooks</li></ul>
+          <p class="frame__ok"><b>Accepted when</b> onboard, pay, fail, refund all pass in test mode.</p>
+          <footer><b>$550</b><span>5 days</span></footer>
+        </article>
+        <article class="frame">
+          <span class="frame__no">M4</span>
+          <h3>Devices &amp; EAS</h3>
+          <ul><li>Real iPhone and Android testing</li><li>Channels, branches, fingerprint runtime</li><li>Update and rollback rehearsed</li></ul>
+          <p class="frame__ok"><b>Accepted when</b> an OTA reaches preview builds and rolls back.</p>
+          <footer><b>$350</b><span>3-4 days</span></footer>
+        </article>
+        <article class="frame">
+          <span class="frame__no">M5</span>
+          <h3>Store submission</h3>
+          <ul><li>Listings, privacy, data safety</li><li>eas submit to both stores</li><li>Fix review feedback until approved</li></ul>
+          <p class="frame__ok"><b>Accepted when</b> both builds are submitted and first feedback is fixed.</p>
+          <footer><b>$350</b><span>until approved</span></footer>
+        </article>
+        <article class="frame frame--total">
+          <span class="frame__no">Total</span>
+          <h3>About $2,090</h3>
+          <p>3-4 weeks of work. Start with M1 and judge the rest on your own code. Everything stays in your GitHub, Supabase, Stripe, Apple and Google accounts.</p>
+          <footer><b>M1 first</b><span>no rewrites</span></footer>
+        </article>
+      </div>
+      <div class="strip__holes bottom" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="end">
+  <div class="end__media"><img src="assets/img/maker-textile.jpg" alt="" loading="lazy"></div>
+  <figure class="end__reel"><video src="assets/video/hero.mp4" poster="assets/video/hero.jpg" muted loop playsinline autoplay preload="none"></video><figcaption>Final reel / take 1 / 00:00:10:18</figcaption></figure>
+  <h2 class="end__title split"><span class="line">Your code.</span><span class="line">Your accounts.</span><span class="line"><em>Shipped.</em></span></h2>
+  <div class="end__meta">
+    <p>Interactive simulation that runs in your browser. Test mode only: no real payments, no real data. The reference implementation is in this repository: <a href="supabase/migrations/20261120000000_marketplace.sql">migration</a>, <a href="supabase/functions/stripe-webhook/index.ts">webhook</a>, <a href="supabase/functions/create-payment/index.ts">payments</a>, <a href="eas.json">eas.json</a>, <a href="app.json">app.json</a>.</p>
+    <p class="end__small">Northstall is a fictional brand made for this demo. Photo and video credits: <a href="assets/CREDITS.md">assets/CREDITS.md</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

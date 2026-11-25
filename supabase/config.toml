@@ -1,0 +1,6 @@
+project_id = "northstall-demo"
+
+# Stripe calls this endpoint without a Supabase JWT; the function
+# verifies the Stripe signature itself instead.
+[functions.stripe-webhook]
+verify_jwt = false
